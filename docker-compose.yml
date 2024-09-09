@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  api:
+    container_name: vocantion-api
+    restart: unless-stopped
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - ./files/:/api/files/
+    ports:
+      - "3000:3000"
+    depends_on:
+      - database
+
+  database:
+    image: postgres:16
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=vocantion
+    command:
+      - "postgres"
+      - "-c"
+      - "port=5432"
+    volumes:
+      - ./docker/db/data:/var/lib/postgresql/data
+      - ./docker/db/sql:/docker-entrypoint-initdb.d
+    ports:
+      - 5433:5433
